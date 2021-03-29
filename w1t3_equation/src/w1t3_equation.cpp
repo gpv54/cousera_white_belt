@@ -22,8 +22,11 @@ int main() {
 
 	if ( A == 0 ){
 	// A=0, Bx + C = 0;
-		x1 = -C / B;
-		cout << x1 << endl;
+		if ( B != 0 ) // If B == 0, than devision on zero!
+		{
+			x1 = -C / B;
+			cout << x1 << endl;
+		}
 	} else {
 	// Ax2 + Bx + C = 0, Check D && find results
 		D = B*B - 4 * A * C;

@@ -10,7 +10,7 @@
 using namespace std;
 
 int main() {
-	unsigned int A, B, result;
+	unsigned int A, B;
 
 	cin >> A >> B;
 

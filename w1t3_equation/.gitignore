@@ -1,13 +1,14 @@
 .metadata
-Debug/
 bin/
 tmp/
+Debug/
 *.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
 .settings/
+.settings/*
 .loadpath
 .recommenders
 

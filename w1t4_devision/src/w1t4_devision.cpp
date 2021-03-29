@@ -18,7 +18,7 @@ int main() {
 	if ( B == 0 ){
 		cout << "Impossible";
 	} else {
-		 cout << (A / B);
+		cout << (A / B);
 	}
 
 	return 0;

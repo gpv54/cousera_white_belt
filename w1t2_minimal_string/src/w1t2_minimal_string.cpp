@@ -12,7 +12,7 @@ using namespace std;
 int main() {
 	string s1, s2, s3;
 
-	//cout << "Please enter tree strings separated with tab..." << endl;
+	//cout << "Please enter tree strings separated with tabs..." << endl;
 	cin >> s1 >> s2 >> s3;
 
 	// select minimal string of two first
@@ -24,7 +24,12 @@ int main() {
 			cout << s3;
 		}
 	} else {
-		cout << s2;
+		// select minimal between s2 and s3
+		if( s2 < s3){
+			cout << s2;
+		} else {
+			cout << s3;
+		}
 	}
 
 	return 0;

@@ -38,9 +38,10 @@ int main() {
 
 		//check with curent map of bus stops
 		for(auto& b : mbus){
-			already_added = true;
+
 			last_mbus = b.first;
 			if(b.second.size() == curBus.size()){
+				already_added = true;
 				for(int i = 0; i < b.second.size(); i++){
 					if(b.second[i] != curBus[i]){
 						already_added = false;
@@ -49,7 +50,6 @@ int main() {
 				}
 			} else {
 				already_added = false;
-				break;
 			}
 
 			if(already_added){

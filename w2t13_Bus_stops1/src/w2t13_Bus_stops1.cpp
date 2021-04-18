@@ -18,7 +18,7 @@ void bussesForStop(map<string, vector<string>>& mbus, string stop, map<int, stri
 		vector<string>& b = mbus[o.second];
 		if(count(b.begin(), b.end(), stop) != 0){ // if stops found in this busses
 			bus_is_accessed = true;
-			for (auto& m : mbus){ // find busses for vector stops
+			for (auto& m : mbus){ // find buses for vector stops
 				if(m.second == b){
 					cout << m.first << " ";
 				}
@@ -30,23 +30,31 @@ void bussesForStop(map<string, vector<string>>& mbus, string stop, map<int, stri
 	cout << endl;
 }
 
-void stopForBus(map<string, vector<string>>& mbus, string bus){
+void stopForBus(map<string, vector<string>>& mbus, string bus, map<int, string>& order){
+	vector<string> tmpbus;
 	if(!mbus.count(bus)){ // No busses
 		cout << "No bus" << endl;
 	} else {
 		for(auto& m: mbus[bus]){ // all stops for current bus
+			tmpbus.clear();
 			cout << "Stop " << m << ": ";
-			for(auto& b: mbus){ // sort out all buses
-				if(b.first == bus){
+			for(auto b : order){
+				if(b.second == bus){
 					continue; // skip current bus stop
 				} else {
-					if(count(b.second.begin(), b.second.end(), m)){
-						cout << b.first << " ";
-					} else {
-						cout << "no interchange";
-						break;
+					vector<string>& ss = mbus[b.second];
+					if(count(ss.begin(), ss.end(), m)){
+						tmpbus.push_back(b.second);
 					}
 				}
+			}
+
+			if(tmpbus.size()){
+				for(auto& s : tmpbus){
+					cout << s << " ";
+				}
+			} else {
+				cout << "no interchange";
 			}
 			cout << endl;
 		}
@@ -87,12 +95,6 @@ int main() {
 			int cnt;
 			cin >> name_bus >> cnt;
 
-//			if(mbus.count(name_bus)){ // No busses
-//				break;
-//			} else if (cnt <= 0){
-//				break;
-//			} // !TODO check bus stops equal to cnt
-
 			order[bus_counter++] = name_bus;
 			vector<string>& bs = mbus[name_bus];
 			while(cnt--){
@@ -105,7 +107,7 @@ int main() {
 			bussesForStop(mbus, val, order);
 		} else if (cmd == "STOPS_FOR_BUS"){
 			cin >> val;
-			stopForBus(mbus, val);
+			stopForBus(mbus, val, order);
 		} else if (cmd == "ALL_BUSES"){
 			allBuses(mbus);
 		}

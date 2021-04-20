@@ -17,125 +17,127 @@ typedef struct{
 //	bool is_changed_name;
 //	bool is_changed_sname;
 } sname;
-//
-//class Person {
-//public:
-//  void ChangeFirstName(int year, const string& first_name) {
-//	  int is_found = pers.count(year);
-//
-//	  if(!is_found){
-////		  string sname = "";
-////		  for(const auto& s : pers){ // find last sername if it possible
-////			  if(year >= s.first){
-////				  sname = s.second.sername;
-////			  }
-////		  }
-//		  pers[year].name = first_name;
-//		  //pers[year].sername = sname;
-//		  pers[year].sname = "";
-////		  for(auto& s : pers){ // change all fist name in next years
-////			  if(year < s.first){
-////				  s.second.name = first_name;
-////			  }
-////		  }
-//	  }
-//  }
-//
-//  void ChangeLastName(int year, const string& last_name) {
-//	  int is_found = pers.count(year);
-//
-//  	  if(!is_found){
-////		  string name = "";
-////		  for(const auto& s : pers){
-////			  if(year >= s.first){
-////				  name = s.second.name;
-////			  }
-////		  }
-//		  pers[year].sname = last_name;
-//		  pers[year].name = "";
-//		  //pers[year].name = name;
-////		  for(auto& s : pers){
-////			  if(year < s.first){
-////				  s.second.sername = last_name;
-////			  }
-////		  }
-//	  }
-//  }
-//
-//
-//
-//  string GetFullName(int year) {
-//
-//	  sname nm = {"", ""};
-//
-//	  if(!pers.size())
-//		  return "Incognito";
-//
-//	  for(const auto& s : pers){
-//		  if(year >= s.first && s.second.sname != ""){
-//			  nm.sname = s.second.sname;
-//		  }
-//		  if(year >= s.first && s.second.name != ""){
-//			  nm.name = s.second.name;
-//		  }
-//	  }
-//
-//	  string full_name = "";
-//
-//	  if(nm.name == "" && nm.sname == ""){
-//		  full_name += "Incognito";
-//	  } else if(nm.name != "" && nm.sname != ""){
-//		  full_name+=nm.name;
-//		  full_name+=" ";
-//		  full_name+=nm.sname;
-//	  } else if(nm.name != ""){
-//		  full_name+=nm.name;
-//		  full_name+=" with unknown last name";
-//	  } else {
-//		  full_name+=nm.sname;
-//		  full_name+=" with unknown first name";
-//	  }
-//
-//	  return full_name;
-//  }
-//private:
-//  map<int, sname> pers;
-//};
-
 
 class Person {
 public:
-    void ChangeFirstName(int year, const string& first_name) {
-        if (YearNameSoname.count(year) == 0) YearNameSoname[year].sname = "";
-        YearNameSoname[year].name = first_name;
-    }
-    void ChangeLastName(int year, const string& last_name) {
-        if (YearNameSoname.count(year) == 0) YearNameSoname[year].name = "";
-        YearNameSoname[year].sname = last_name;
-    }
-    string GetFullName(int year) {
-        if (YearNameSoname.size() == 0) {
-            return "Incognito";
-        }
-        else {
-            for (const auto& i : YearNameSoname) {
-                if (year < i.first) return "Incognito";
-                break;
-            }
-        }
-        string nm = "";
-        string sn = "";
-        for (const auto& i : YearNameSoname) {
-            if (i.first <= year && i.second.sname != "") sn = i.second.sname;
-            if (i.first <= year && i.second.name != "") nm = i.second.name;
-        }
-        if(nm == "") return sn + " with unknown first name";
-        else if(sn == "") return nm + " with unknown last name";
-        else return nm + " " + sn;
-    }
+  void ChangeFirstName(int year, const string& first_name) {
+	  int is_found = pers.count(year);
+
+	  if(!is_found){
+//		  string sname = "";
+//		  for(const auto& s : pers){ // find last sername if it possible
+//			  if(year >= s.first){
+//				  sname = s.second.sername;
+//			  }
+//		  }
+
+		  //pers[year].sername = sname;
+		  pers[year].sname = "";
+//		  for(auto& s : pers){ // change all fist name in next years
+//			  if(year < s.first){
+//				  s.second.name = first_name;
+//			  }
+//		  }
+	  }
+	  pers[year].name = first_name;
+  }
+
+  void ChangeLastName(int year, const string& last_name) {
+	  int is_found = pers.count(year);
+
+  	  if(!is_found){
+//		  string name = "";
+//		  for(const auto& s : pers){
+//			  if(year >= s.first){
+//				  name = s.second.name;
+//			  }
+//		  }
+
+		  pers[year].name = "";
+		  //pers[year].name = name;
+//		  for(auto& s : pers){
+//			  if(year < s.first){
+//				  s.second.sername = last_name;
+//			  }
+//		  }
+	  }
+  	  pers[year].sname = last_name;
+  }
+
+
+
+  string GetFullName(int year) {
+
+	  sname nm = {"", ""};
+
+	  if(!pers.size())
+		  return "Incognito";
+
+	  for(const auto& s : pers){
+		  if(year >= s.first && s.second.sname != ""){
+			  nm.sname = s.second.sname;
+		  }
+		  if(year >= s.first && s.second.name != ""){
+			  nm.name = s.second.name;
+		  }
+	  }
+
+	  string full_name = "";
+
+	  if(nm.name == "" && nm.sname == ""){
+		  full_name += "Incognito";
+	  } else if(nm.name != "" && nm.sname != ""){
+		  full_name+=nm.name;
+		  full_name+=" ";
+		  full_name+=nm.sname;
+	  } else if(nm.name != ""){
+		  full_name+=nm.name;
+		  full_name+=" with unknown last name";
+	  } else {
+		  full_name+=nm.sname;
+		  full_name+=" with unknown first name";
+	  }
+
+	  return full_name;
+  }
 private:
-    map<int, sname> YearNameSoname;
+  map<int, sname> pers;
 };
+
+
+//class Person {
+//public:
+//    void ChangeFirstName(int year, const string& first_name) {
+//        if (YearNameSoname.count(year) == 0) YearNameSoname[year].sname = "";
+//        YearNameSoname[year].name = first_name;
+//    }
+//    void ChangeLastName(int year, const string& last_name) {
+//        if (YearNameSoname.count(year) == 0) YearNameSoname[year].name = "";
+//        YearNameSoname[year].sname = last_name;
+//    }
+//    string GetFullName(int year) {
+//        if (YearNameSoname.size() == 0) {
+//            return "Incognito";
+//        }
+//        else {
+//            for (const auto& i : YearNameSoname) {
+//                if (year < i.first) return "Incognito";
+//                break;
+//            }
+//        }
+//        string nm = "";
+//        string sn = "";
+//        for (const auto& i : YearNameSoname) {
+//            if (i.first <= year && i.second.sname != "") sn = i.second.sname;
+//            if (i.first <= year && i.second.name != "") nm = i.second.name;
+//        }
+//        if(nm == "") return sn + " with unknown first name";
+//        else if(sn == "") return nm + " with unknown last name";
+//        else return nm + " " + sn;
+//    }
+//private:
+//    map<int, sname> YearNameSoname;
+//};
 
 
 //typedef enum {

@@ -21,6 +21,14 @@ using namespace std;
 class Date {
 public:
 	Date(int y, int m, int d){
+		if (m < 1 || m > 12)
+		{
+			throw invalid_argument("Month value is invalid: " + std::to_string(m));
+		} else if (d < 1 || d > 31)
+		{
+			throw invalid_argument("Day value is invalid: " + std::to_string(d));
+		}
+
 		year = y;
 		month = m;
 		day = d;
@@ -62,8 +70,7 @@ private:
 };
 
 bool operator<(const Date& lhs, const Date& rhs){
-//	if(lhs.GetDataString() < rhs.GetDataString())
-//		return true;
+
 	if(lhs.GetYear() < rhs.GetYear()){
 		return true;
 	}
@@ -89,8 +96,8 @@ public:
 
 	bool DeleteEvent(const Date& date, const string& event){
 		string date_str = date.toString();
-		if(db.count(date_str)){
-			if(db[date_str].count(event)){
+		if(db.count(date_str) > 0){
+			if(db[date_str].count(event) > 0){
 				db[date_str].erase(event);
 				cout << "Deleted successfully" << endl;
 #ifdef TEST
@@ -104,21 +111,17 @@ public:
 #endif
 				return false;
 			}
-		} else {
-			cout << "[warn][DeleteEvent] Date " << date_str << " not found!" << endl;
-			return false;
 		}
+		return false;
 	}
 
 	int  DeleteDate(const Date& date){
 		int count_events = 0;
 		string date_str = date.toString();
 
-		if(db.count(date_str)){
-			count_events = db[date_str].size();
+		if(db.count(date_str) > 0){
+			count_events = db.at(date_str).size();
 			db.erase(date_str);
-		} else {
-			cout << "[warn][DeleteDate] Date " << date_str << " not found!" << endl;
 		}
 
 		return count_events;
@@ -127,10 +130,8 @@ public:
 	set<string> Find(const Date& date) const {
 		string date_str = date.toString();
 		set<string> cur_date_events;
-		if(db.count(date_str)){
+		if(db.count(date_str) > 0){
 			cur_date_events = db.at(date_str);
-		} else {
-			cout << "[warn][Find] Date " << date_str << " not found!" << endl;
 		}
 		return cur_date_events;
 	}
@@ -143,7 +144,7 @@ public:
 		string date;
 		if(db.size()){
 			for(auto& d : db){
-				for(auto& e : d.second){
+				for(auto e : d.second){
 					if(d.first[0] != '-'){ // minus date
 						cout << d.first << ' ' << e << endl;
 #ifdef TEST
@@ -175,63 +176,23 @@ private:
 
 Date StringToDate(string &str) {
 	int y, m, d;
-	char ch;
-	string res;
+	bool is_correct = true;
 	stringstream ss(str);
 
-// Year
-	if(!(ss >> y))
-	{
-		res = "Wrong date format: ";
-		res += str;
-		throw invalid_argument(res.c_str());
-	}
-// -
-	ss >> ch;
-	if(ch != '-'){
-		res = "Wrong date format: ";
-		res += str;
-		throw invalid_argument(str.c_str());
-	}
+	is_correct = is_correct && (ss >> y);
+	is_correct = is_correct && (ss.peek() == '-');
+	ss.ignore(1);
 
-// Month
-	ch = ss.peek();
-	if(ch == '+'){
-		ss.ignore(1);
-	}
-	if(ss >> m){
-		if(m < 1 || m > 12){
-			res = "Month value is invalid: ";
-			res += to_string(m);
-			throw invalid_argument(res.c_str());
-		}
-	} else {
-		res = "Wrong date format: ";
-		res += str;
-		throw invalid_argument(res.c_str());
-	}
-// -
-	ss >> ch;
-	if(ch != '-'){
-		res = "Wrong date format: ";
-		res += str;
-		throw invalid_argument(res.c_str());
-	}
-// Day
-	ch = ss.peek();
-	if(ch == '+'){
-		ss.ignore(1);
-	}
-	if(ss >> d){
-		if(d < 1 || d > 31){
-			res = "Day value is invalid: ";
-			res += to_string(d);
-			throw invalid_argument(res.c_str());
-		}
-	} else {
-		res = "Wrong date format: ";
-		res += str;
-		throw invalid_argument(res.c_str());
+	is_correct = is_correct && (ss >> m);
+	is_correct = is_correct && (ss.peek() == '-');
+	ss.ignore(1);
+
+	is_correct = is_correct && (ss >> d);
+	is_correct = is_correct && ss.eof();
+
+	if (!is_correct)
+	{
+		throw invalid_argument("Wrong date format: " + str);
 	}
 
 	return Date(y, m, d);
@@ -248,10 +209,16 @@ void Processing(Database& db, string& command)
 		if(action == "Add"){
 			ss >> date;
 			ss >> event;
-			db.AddEvent(StringToDate(date), event);
+			if((event != "") && (event != " "))
+				db.AddEvent(StringToDate(date), event);
 		} else if(action == "Del"){
+			event = "";
 			ss >> date;
-			if (ss >> event){
+			if (!ss.eof()) {
+				ss >> event;
+			}
+
+			if (!event.empty()){
 				db.DeleteEvent(StringToDate(date), event);
 			} else {
 				int count = db.DeleteDate(StringToDate(date));
@@ -321,6 +288,7 @@ int main() {
 		{ 26, "Find 1---1-1", {"Wrong date format: 1---1-1"}},
 		{ 27, "Find 1-1---1", {"Wrong date format: 1-1---1"}},
 		{ 28, "Add 0-13-32 event1", {"Month value is invalid: 13"}},
+		{ 29, "Del -1-1-1 eventX", {"Deleted successfully"}},
 		};
 		for(auto tid = 0; tid < test_cases.size(); tid++){
 			stest& tc = test_cases[tid];

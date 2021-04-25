@@ -18,11 +18,11 @@ int main() {
 
 	long a, b, min;
 
-	the_time = clock();
+	//the_time = clock();
 
 	cin >> a >> b;
 
-	 while ( a && b){
+	while ( a && b){
 		 if (a > b){
 			 //long swp = a;
 			 a = a % b;

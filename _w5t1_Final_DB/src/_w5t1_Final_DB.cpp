@@ -46,23 +46,6 @@ public:
 		return day;
 	}
 
-	string toString() const {
-		stringstream ss;
-
-		if(year < 0){
-			ss << '-' << setw(4) << setfill('0') << to_string(year * -1) << '-'
-			   << setw(2) << setfill('0') << to_string(month) << '-'
-			   << setw(2) << setfill('0') << to_string(day);
-		} else {
-			ss << setw(4) << setfill('0') << to_string(year) << '-'
-			   << setw(2) << setfill('0') << to_string(month) << '-'
-			   << setw(2) << setfill('0') << to_string(day);
-		}
-
-
-		return ss.str();
-	}
-
 private:
 	int year;
 	int month;
@@ -87,28 +70,27 @@ bool operator<(const Date& lhs, const Date& rhs){
 	return false;
 }
 
+std::ostream& operator << (std::ostream& out, const Date& date)
+{
+	out << setw(4) << setfill('0') << to_string(date.GetYear()) << '-'
+		<< setw(2) << setfill('0') << to_string(date.GetMonth()) << '-'
+	    << setw(2) << setfill('0') << to_string(date.GetDay());
+    return out;
+}
+
 class Database {
 public:
 	void AddEvent(const Date& date, const string& event){
 		if (!event.empty())
-			db[date.toString()].insert(event);
+			db[date].insert(event);
 	}
 
 	bool DeleteEvent(const Date& date, const string& event){
-		string date_str = date.toString();
-		if(db.count(date_str) > 0){
-			if(db[date_str].count(event) > 0){
-				db[date_str].erase(event);
-				cout << "Deleted successfully" << endl;
-#ifdef TEST
-				addToTestOut("Deleted successfully");
-#endif
+		if(db.count(date) > 0){
+			if(db[date].count(event) > 0){
+				db[date].erase(event);
 				return true;
 			} else {
-				cout << "Event not found" << endl;
-#ifdef TEST
-				addToTestOut("Event not found");
-#endif
 				return false;
 			}
 		}
@@ -117,21 +99,19 @@ public:
 
 	int  DeleteDate(const Date& date){
 		int count_events = 0;
-		string date_str = date.toString();
 
-		if(db.count(date_str) > 0){
-			count_events = db.at(date_str).size();
-			db.erase(date_str);
+		if(db.count(date) > 0){
+			count_events = db.at(date).size();
+			db.erase(date);
 		}
 
 		return count_events;
 	}
 
 	set<string> Find(const Date& date) const {
-		string date_str = date.toString();
 		set<string> cur_date_events;
-		if(db.count(date_str) > 0){
-			cur_date_events = db.at(date_str);
+		if(db.count(date) > 0){
+			cur_date_events = db.at(date);
 		}
 		return cur_date_events;
 	}
@@ -141,17 +121,14 @@ public:
 #else
 	void Print() const {
 #endif
-		string date;
-		if(db.size()){
-			for(auto& d : db){
-				for(auto e : d.second){
-					if(d.first[0] != '-'){ // minus date
-						cout << d.first << ' ' << e << endl;
+		for(const auto& d : db){
+			for(auto e : d.second){
+					cout << d.first << ' ' << e << endl;
 #ifdef TEST
-						addToTestOut(d.first + ' ' + e);
+					stringstream ss;
+					ss << d.first << ' ' << e << endl;
+					addToTestOut(ss.str());
 #endif
-					}
-				}
 			}
 		}
 	}
@@ -171,7 +148,7 @@ private:
 #ifdef TEST
 	vector<string> cout_text;
 #endif
-	map<string, set<string>> db;
+	map<Date, set<string>> db;
 };
 
 Date StringToDate(string &str) {
@@ -209,8 +186,9 @@ void Processing(Database& db, string& command)
 		if(action == "Add"){
 			ss >> date;
 			ss >> event;
-			if((event != "") && (event != " "))
-				db.AddEvent(StringToDate(date), event);
+			const Date dt = StringToDate(date);
+			if((event != "") || (event != " "))
+				db.AddEvent(dt, event);
 		} else if(action == "Del"){
 			event = "";
 			ss >> date;
@@ -218,14 +196,26 @@ void Processing(Database& db, string& command)
 				ss >> event;
 			}
 
-			if (!event.empty()){
-				db.DeleteEvent(StringToDate(date), event);
-			} else {
-				int count = db.DeleteDate(StringToDate(date));
+			const Date dt = StringToDate(date);
+
+			if (event.empty()){
+				int count = db.DeleteDate(dt);
 				cout << "Deleted " << count << " events" << endl;
 #ifdef TEST
 				db.addToTestOut("Deleted " + to_string(count) + " events");
 #endif
+			} else {
+				if(db.DeleteEvent(dt, event)){
+					cout << "Deleted successfully" << endl;
+#ifdef TEST
+					db.addToTestOut("Deleted successfully");
+#endif
+				} else {
+					cout << "Event not found" << endl;
+#ifdef TEST
+					addToTestOut("Event not found");
+#endif
+				}
 			}
 		} else if(action == "Find"){
 			ss >> date;
